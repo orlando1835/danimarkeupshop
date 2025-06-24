@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dani MarkeUp Shop - Panel Administrativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Importar fuente Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        /* Variables CSS para la paleta de Glassmorphism */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Azul/Púrpura */
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); /* Rosa/Rojo */
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* Azul/Cyan */
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --dark-glass: rgba(0, 0, 0, 0.1);
+            --text-primary: #f8f8f8; /* Texto claro para fondos oscuros */
+            --text-secondary: #e2e8f0; /* Gris claro para texto secundario */
+            --text-dark: #1a202c; /* Texto oscuro para fondos claros (modales) */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient); /* Fondo principal de la página */
+            min-height: 100vh;
+            color: var(--text-primary); /* Color de texto por defecto */
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Effects */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .glass-dark {
+            background: var(--dark-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animated Background (main body background) */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Asegura el fondo si el body falla */
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cdefs%3E%3CradialGradient id="a" cx="50%25" cy="50%25" r="50%25"%3E%3Cstop offset="0%25" stop-color="%23ff6b6b" stop-opacity="0.3"/%3E%3Cstop offset="100%25" stop-color="%23ff6b6b" stop-opacity="0"/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx="20" cy="20" r="20" fill="url(%23a)"/%3E%3Ccircle cx="80" cy="80" r="25" fill="url(%23a)"/%3E%3Ccircle cx="80" cy="20" r="15" fill="url(%23a)"/%3E%3Ccircle cx="20" cy="80" r="18" fill="url(%23a)"/%3E%3C/svg%3E');
+            background-size: 100px 100px; /* Asegura el tamaño del patrón */
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Common Heading Styles */
+        h1, h2 {
+            color: var(--text-primary); /* Blanco o gris muy claro para títulos */
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3); /* Sombra para resaltar */
+        }
+
+        /* Buttons (General style for this page) */
+        .modern-button {
+            background: var(--accent-gradient); /* Azul/Cyan para los botones */
+            border: none;
+            border-radius: 25px;
+            padding: 12px 28px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3); /* Sombra para resaltar */
+        }
+
+        .modern-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .modern-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .modern-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Form elements */
+        label {
+            color: var(--text-secondary); /* Gris claro para etiquetas de formulario */
+            font-weight: 500;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-primary); /* Texto claro en los inputs */
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #f093fb; /* Rosa en el focus */
+            box-shadow: 0 0 0 2px rgba(240, 147, 251, 0.5);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.15); /* Fondo glass para la tabla */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: var(--text-secondary); /* Color de texto en la tabla */
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .product-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Action Buttons in Table */
+        .action-button {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px; /* Más redondeado */
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .action-button.edit-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe); /* Azul/Cyan */
+            color: white;
+        }
+        .action-button.edit-btn:hover {
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            transform: translateY(-1px);
+        }
+        .action-button.delete-btn {
+            background: linear-gradient(135deg, #f5576c, #f093fb); /* Rojo/Rosa */
+            color: white;
+        }
+        .action-button.delete-btn:hover {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            transform: translateY(-1px);
+        }
+
+        /* Notification styles (adapted for Glassmorphism) */
+        #app-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white; /* Texto blanco por defecto */
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        #app-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Colores de notificación adaptados a Glassmorphism */
+        #app-notification.success { background: linear-gradient(45deg, rgba(16, 185, 129, 0.7), rgba(52, 211, 153, 0.7)); } /* Green transparent */
+        #app-notification.error { background: linear-gradient(45deg, rgba(239, 68, 68, 0.7), rgba(220, 38, 38, 0.7)); } /* Red transparent */
+        #app-notification.info { background: linear-gradient(45deg, rgba(59, 130, 246, 0.7), rgba(96, 165, 250, 0.7)); } /* Blue transparent */
+
+        /* Custom Scrollbar (same as index.html for consistency) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #e080f0, #e54563);
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-inter">
+    <div class="animated-bg"></div>
+    <div class="min-h-screen flex flex-col items-center py-10 px-4">
+        <div class="glass p-8 rounded-lg shadow-xl w-full max-w-5xl">
+            <header class="mb-8 flex justify-between items-center">
+                <h1 class="text-4xl font-bold flex-grow text-left">Panel de Administración</h1>
+                <button id="back-to-shop-btn" class="modern-button flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Regresar a la Tienda
+                </button>
+            </header>
+
+            <nav class="mb-8 border-b border-gray-200">
+                <ul class="flex -mb-px text-lg font-medium text-center" role="tablist">
+                    <li class="mr-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-pink-300 hover:border-pink-300 active:text-pink-300 active:border-pink-300 focus:outline-none focus:text-pink-300 focus:border-pink-300 text-white/70" id="products-tab" type="button" role="tab" aria-controls="products" aria-selected="true">Gestionar Productos</button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div id="products-content" role="tabpanel" aria-labelledby="products-tab">
+                <section class="mb-10 p-8 glass rounded-lg shadow-inner">
+                    <h2 class="text-3xl font-semibold mb-6">Gestionar Producto</h2>
+                    <form id="product-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="hidden" id="product-id"> 
+                        
+                        <div>
+                            <label for="product-name" class="block text-sm mb-2">Nombre del Producto:</label>
+                            <input type="text" id="product-name" class="w-full" required>
+                        </div>
+
+                        <div>
+                            <label for="product-category" class="block text-sm mb-2">Categoría:</label>
+                            <input type="text" id="product-category" class="w-full" required>
+                        </div>
+
+                        <div>
+                            <label for="product-price" class="block text-sm mb-2">Precio:</label>
+                            <input type="number" id="product-price" step="0.01" class="w-full" required>
+                        </div>
+
+                        <div>
+                            <label for="product-image" class="block text-sm mb-2">URL de la Imagen:</label>
+                            <input type="text" id="product-image" class="w-full" placeholder="ej. img/nuevo_labial.jpg" required>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="product-description" class="block text-sm mb-2">Descripción:</label>
+                            <textarea id="product-description" rows="4" class="w-full" required></textarea>
+                        </div>
+
+                        <div class="md:col-span-2 flex justify-end space-x-4 mt-4">
+                            <button type="submit" id="submit-btn" class="modern-button">Añadir Producto</button>
+                            <button type="button" id="cancel-edit-btn" class="modern-button" style="display: none; background: linear-gradient(135deg, #a78bfa, #8b5cf6);">Cancelar Edición</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="p-8 glass rounded-lg shadow-inner">
+                    <h2 class="text-3xl font-semibold mb-6">Lista de Productos</h2>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-list-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-notification" class="notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE_URL = 'http://localhost:3000/api';
+            const productForm = document.getElementById('product-form');
+            const productIdInput = document.getElementById('product-id');
+            const productNameInput = document.getElementById('product-name');
+            const productCategoryInput = document.getElementById('product-category');
+            const productPriceInput = document.getElementById('product-price');
+            const productImageInput = document.getElementById('product-image');
+            const productDescriptionInput = document.getElementById('product-description');
+            const submitButton = document.getElementById('submit-btn');
+            const cancelEditButton = document.getElementById('cancel-edit-btn');
+            const productListBody = document.getElementById('product-list-body');
+            const appNotification = document.getElementById('app-notification'); 
+            const backToShopButton = document.getElementById('back-to-shop-btn'); 
+
+            let editingProductId = null;
+
+            // Redireccionar si no es admin (seguridad muy básica de frontend)
+            const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (!loggedInUser || loggedInUser.role !== 'admin') {
+                alert('Acceso denegado. Debes iniciar sesión como administrador.');
+                window.location.href = 'index.html'; 
+                return;
+            }
+
+            // --- Funciones de Notificación ---
+            function showNotification(message, type = 'info') {
+                appNotification.textContent = message; 
+                appNotification.classList.remove('success', 'error', 'info', 'show'); 
+                
+                // Limpiar explícitamente las clases de color de fondo y texto si existen
+                appNotification.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500', 'text-green-800', 'text-red-800', 'text-blue-800', 'text-white');
+
+                // Añadir la clase de tipo y sus colores correspondientes
+                if (type === 'success') {
+                    appNotification.classList.add('success'); // Estilos en CSS de notificación
+                } else if (type === 'error') {
+                    appNotification.classList.add('error');
+                } else if (type === 'info') {
+                    appNotification.classList.add('info');
+                }
+
+                appNotification.classList.add('show');
+
+                setTimeout(() => {
+                    appNotification.classList.remove('show');
+                }, 3000);
+            }
+
+            // --- Cargar Productos ---
+            async function loadProducts() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/products`);
+                    if (!response.ok) throw new Error('No se pudieron cargar los productos.');
+                    const products = await response.json();
+                    
+                    productListBody.innerHTML = ''; 
+                    if (products.length === 0) {
+                        productListBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-400">No hay productos. Añade uno nuevo.</td></tr>';
+                    } else {
+                        products.forEach(product => {
+                            const row = productListBody.insertRow();
+                            // Aplicar las clases directamente en el HTML de la fila y celdas
+                            row.innerHTML = `
+                                <td class="py-3 px-4 border-b border-gray-200 text-gray-200">${product.id}</td>
+                                <td class="py-3 px-4 border-b border-gray-200"><img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded-md shadow-sm"></td>
+                                <td class="py-3 px-4 border-b border-gray-200 font-semibold text-gray-100">${product.name}</td>
+                                <td class="py-3 px-4 border-b border-gray-200 text-gray-200">${product.category}</td>
+                                <td class="py-3 px-4 border-b border-gray-200 text-gray-100">$${product.price.toLocaleString('es-CO')}</td>
+                                <td class="py-3 px-4 border-b border-gray-200 whitespace-nowrap">
+                                    <button class="action-button edit-btn" data-id="${product.id}">Editar</button>
+                                    <button class="action-button delete-btn" data-id="${product.id}">Eliminar</button>
+                                </td>
+                            `;
+                        });
+                    }
+
+                    document.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', handleEditProduct));
+                    document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', handleDeleteProduct));
+
+                } catch (error) {
+                    console.error('Error cargando productos:', error);
+                    showNotification('Error al cargar productos.', 'error');
+                }
+            }
+
+            // --- Añadir/Editar Producto ---
+            productForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const productData = {
+                    name: productNameInput.value,
+                    category: productCategoryInput.value,
+                    price: parseFloat(productPriceInput.value),
+                    image: productImageInput.value,
+                    description: productDescriptionInput.value
+                };
+
+                try {
+                    let response;
+                    if (editingProductId) {
+                        response = await fetch(`${API_BASE_URL}/products/${editingProductId}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(productData)
+                        });
+                    } else {
+                        response = await fetch(`${API_BASE_URL}/products`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(productData)
+                        });
+                    }
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error desconocido al guardar el producto.');
+                    }
+                    
+                    showNotification(editingProductId ? 'Producto actualizado con éxito!' : 'Producto añadido con éxito!', 'success');
+                    
+                    productForm.reset(); 
+                    editingProductId = null;
+                    submitButton.textContent = 'Añadir Producto';
+                    cancelEditButton.style.display = 'none';
+                    loadProducts();
+                    
+                } catch (error) {
+                    console.error('Error al guardar producto:', error);
+                    showNotification(`Error: ${error.message}`, 'error');
+                }
+            });
+
+            // --- Manejar Edición de Producto ---
+            async function handleEditProduct(event) {
+                const productId = parseInt(event.target.dataset.id);
+                try {
+                    const response = await fetch(`${API_BASE_URL}/products`);
+                    if (!response.ok) throw new Error('No se pudieron cargar los productos para editar.');
+                    const products = await response.json();
+                    const productToEdit = products.find(p => p.id === productId);
+
+                    if (productToEdit) {
+                        productIdInput.value = productToEdit.id;
+                        productNameInput.value = productToEdit.name;
+                        productCategoryInput.value = productToEdit.category;
+                        productPriceInput.value = productToEdit.price;
+                        productImageInput.value = productToEdit.image;
+                        productDescriptionInput.value = productToEdit.description;
+                        
+                        editingProductId = productToEdit.id;
+                        submitButton.textContent = 'Actualizar Producto';
+                        cancelEditButton.style.display = 'inline-block';
+                        showNotification(`Editando producto: ${productToEdit.name}`, 'info');
+                    }
+                } catch (error) {
+                    console.error('Error al cargar producto para edición:', error);
+                    showNotification('Error al cargar producto para edición.', 'error');
+                }
+            }
+
+            // --- Cancelar Edición ---
+            cancelEditButton.addEventListener('click', () => {
+                productForm.reset();
+                editingProductId = null;
+                submitButton.textContent = 'Añadir Producto';
+                cancelEditButton.style.display = 'none';
+                showNotification('Edición cancelada.', 'info');
+            });
+
+            // --- Eliminar Producto ---
+            async function handleDeleteProduct(event) {
+                const productId = parseInt(event.target.dataset.id);
+                if (!confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error desconocido al eliminar el producto.');
+                    }
+                    
+                    showNotification('Producto eliminado con éxito!', 'success');
+                    loadProducts(); 
+                } catch (error) {
+                    console.error('Error al eliminar producto:', error);
+                    showNotification(`Error: ${error.message}`, 'error');
+                }
+            }
+
+            // --- Botón de Regresar a la Tienda ---
+            backToShopButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+
+            // --- Cargar productos al iniciar la página ---
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
